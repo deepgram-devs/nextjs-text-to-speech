@@ -12,6 +12,18 @@ function authenticationError(code: "MISSING_TOKEN" | "INVALID_TOKEN", message: s
   );
 }
 
+function upstreamStatus(error: unknown) {
+  if (!error || typeof error !== "object") return null;
+
+  const candidate = error as {
+    status?: unknown;
+    statusCode?: unknown;
+    response?: { status?: unknown };
+  };
+  const status = candidate.status ?? candidate.statusCode ?? candidate.response?.status;
+  return typeof status === "number" && Number.isInteger(status) ? status : null;
+}
+
 export async function POST(request: NextRequest) {
   const authorization = request.headers.get("authorization");
   if (!authorization) {
@@ -45,7 +57,23 @@ export async function POST(request: NextRequest) {
       headers: { "Content-Type": "audio/mpeg", "Cache-Control": "no-store" },
     });
     return response;
-  } catch {
+  } catch (error) {
+    console.error("TTS synthesis failed:", error);
+
+    const status = upstreamStatus(error);
+    if (status && status >= 400 && status < 500) {
+      return NextResponse.json(
+        {
+          error: {
+            type: "ValidationError",
+            code: "SYNTHESIS_REJECTED",
+            message: "Deepgram rejected the synthesis request",
+          },
+        },
+        { status }
+      );
+    }
+
     return NextResponse.json(
       { error: { type: "GenerationError", code: "SYNTHESIS_FAILED", message: "Unable to synthesize speech" } },
       { status: 502 }

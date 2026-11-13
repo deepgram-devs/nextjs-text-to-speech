@@ -3,7 +3,7 @@ import { createHmac, randomBytes, timingSafeEqual } from "node:crypto";
 const fallbackSecret = randomBytes(32).toString("hex");
 
 function secret() {
-  return process.env.SESSION_SECRET || process.env.DEEPGRAM_API_KEY || fallbackSecret;
+  return process.env.SESSION_SECRET || fallbackSecret;
 }
 
 function sign(value: string) {

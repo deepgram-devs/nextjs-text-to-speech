@@ -1,4 +1,4 @@
-FROM golang:1.25-alpine AS caddy-builder
+FROM golang:1.26-alpine AS caddy-builder
 WORKDIR /build
 RUN go install github.com/caddyserver/xcaddy/cmd/xcaddy@latest && xcaddy build --with github.com/mholt/caddy-ratelimit
 
@@ -6,9 +6,9 @@ FROM node:24-slim AS frontend-builder
 RUN corepack enable
 WORKDIR /build
 COPY frontend/package.json frontend/pnpm-lock.yaml ./frontend/
-RUN cd frontend && pnpm install --frozen-lockfile
+RUN cd frontend && corepack pnpm@10.0.0 install --frozen-lockfile
 COPY frontend/ ./frontend/
-RUN cd frontend && pnpm run build
+RUN cd frontend && corepack pnpm@10.0.0 run build
 RUN sed -i 's|<head>|<head>\n  <base href="{{ .Req.Header.Get "X-Base-Path" }}">|' ./frontend/dist/index.html
 
 FROM node:24-slim AS backend-builder
@@ -18,7 +18,7 @@ COPY package.json pnpm-lock.yaml ./
 RUN pnpm install --frozen-lockfile
 COPY app ./app
 COPY public ./public
-COPY next.config.js postcss.config.js tailwind.config.ts tsconfig.json next-env.d.ts ./
+COPY next.config.js postcss.config.js tailwind.config.ts tsconfig.json ./
 RUN pnpm run build
 
 FROM node:24-slim

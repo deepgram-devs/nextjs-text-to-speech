@@ -12,10 +12,10 @@ This starter serves the pinned `text-to-speech-html` frontend as its user interf
 
 ```sh
 git submodule update --init --recursive
-corepack pnpm install --frozen-lockfile
-cd frontend && corepack pnpm install --frozen-lockfile && cd ..
+corepack pnpm@10.0.0 install --frozen-lockfile
+cd frontend && corepack pnpm@10.0.0 install --frozen-lockfile && cd ..
 cp sample.env.local .env.local
-# Set DEEPGRAM_API_KEY in .env.local
+# Set DEEPGRAM_API_KEY and a random SESSION_SECRET in .env.local
 make start
 ```
 

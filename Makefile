@@ -1,4 +1,4 @@
-PNPM := corepack pnpm
+PNPM := corepack pnpm@10.0.0
 
 .PHONY: check check-prereqs init install install-frontend start start-backend start-frontend build test validate-contracts update clean status eject-frontend
 
