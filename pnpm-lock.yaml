@@ -60,6 +60,9 @@ importers:
       pretty-quick:
         specifier: ^4.0.0
         version: 4.2.2(prettier@3.9.10)
+      semantic-release:
+        specifier: ^25.0.9
+        version: 25.0.9(typescript@5.9.3)
       tailwindcss:
         specifier: ^3.4.1
         version: 3.4.19
